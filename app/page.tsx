@@ -98,8 +98,8 @@ export default function Home() {
       <CultureCompassHeader />
       <HeroSection />
       
-      <header className="bg-gradient-to-b from-background/95 to-background/0 backdrop-blur-sm py-6">
-        <div className="container mx-auto px-4 flex items-center justify-between">
+      <header className="bg-gradient-to-b from-background/95 to-background/0 backdrop-blur-sm">
+        <div className="container mx-auto flex items-center justify-between">
           <h1 className="text-3xl font-bold text-foreground tracking-tight">
             WorldMap
           </h1>
