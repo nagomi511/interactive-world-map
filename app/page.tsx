@@ -9,6 +9,7 @@ import { ContactForm } from '@/components/contact-form'
 import { CultureCompassHeader } from '@/components/culture-compass-header'
 import { HeroSection } from '@/components/hero-section'
 import { Button } from '@/components/ui/button'
+import { BookOpen, Calendar, Users } from 'lucide-react'
 
 export default function Home() {
   const [selectedPeople, setSelectedPeople] = useState<string | null>(null)
@@ -32,6 +33,7 @@ export default function Home() {
               variant="default"
               size="default"
             >
+              <BookOpen className="mr-2 h-4 w-4" />
               Stories
             </Button>
             <Button
@@ -39,6 +41,7 @@ export default function Home() {
               variant="default"
               size="default"
             >
+              <Calendar className="mr-2 h-4 w-4" />
               Events
             </Button>
             <Button
@@ -46,6 +49,7 @@ export default function Home() {
               variant="default"
               size="default"
             >
+              <Users className="mr-2 h-4 w-4" />
               People
             </Button>
           </div>

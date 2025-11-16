@@ -93,6 +93,33 @@ export function WorldMap({ onSelectPeople, onOpenStoryForm, onOpenEventForm, onO
       </div>
 
       {/* Indigenous peoples markers */}
+
+      <div className="absolute right-6 top-6 z-20 flex flex-col gap-3">
+        <Button
+          size="sm"
+          onClick={onOpenStoryForm}
+          className="bg-primary/80 hover:bg-primary backdrop-blur-sm shadow-lg"
+        >
+          <BookOpen className="mr-2 h-4 w-4" />
+          Show1
+        </Button>
+        <Button
+          size="sm"
+          onClick={onOpenEventForm}
+          className="bg-primary/80 hover:bg-primary backdrop-blur-sm shadow-lg"
+        >
+          <Calendar className="mr-2 h-4 w-4" />
+          Show2
+        </Button>
+        <Button
+          size="sm"
+          onClick={onOpenContactForm}
+          className="bg-primary/80 hover:bg-primary backdrop-blur-sm shadow-lg"
+        >
+          <Users className="mr-2 h-4 w-4" />
+          Show3
+        </Button>
+      </div>
     </div>
   )
 }

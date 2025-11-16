@@ -46,16 +46,16 @@ export function EventForm({ open, onOpenChange }: EventFormProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
+      <DialogContent className="max-w-2xl max-h-[85vh] p-0 gap-0 overflow-hidden flex flex-col">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border shrink-0">
           <DialogTitle className="text-2xl font-bold">Post a Cultural Event</DialogTitle>
           <DialogDescription>
             Share indigenous cultural events happening around the world
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="h-[550px]">
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <ScrollArea className="flex-1 px-6">
+          <div className="py-6 space-y-6">
             <div className="space-y-2">
               <Label htmlFor="eventName">Event Name *</Label>
               <Input
@@ -125,17 +125,19 @@ export function EventForm({ open, onOpenChange }: EventFormProps) {
                 onChange={(e) => setFormData({ ...formData, eventUrl: e.target.value })}
               />
             </div>
-
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" className="flex-1">
-                Post Event
-              </Button>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-            </div>
-          </form>
+          </div>
         </ScrollArea>
+
+        <form onSubmit={handleSubmit} className="px-6 py-4 border-t border-border shrink-0">
+          <div className="flex gap-3">
+            <Button type="submit" className="flex-1">
+              Post Event
+            </Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   )
