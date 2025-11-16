@@ -20,18 +20,22 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import type { Person } from '@/app/page'
 
 interface ContactFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSubmit: (person: Omit<Person, 'id' | 'createdAt'>) => void
 }
 
-export function ContactForm({ open, onOpenChange }: ContactFormProps) {
+export function ContactForm({ open, onOpenChange, onSubmit }: ContactFormProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     pronouns: '',
     heritageLocation: '',
+    latitude: '',
+    longitude: '',
     userDescription: '',
     contactInfo: '',
   })
@@ -39,13 +43,24 @@ export function ContactForm({ open, onOpenChange }: ContactFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('[v0] Contact form submitted:', formData)
-    // TODO: Save to database
+    onSubmit({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      pronouns: formData.pronouns,
+      heritageLocation: formData.heritageLocation,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+      userDescription: formData.userDescription,
+      contactInfo: formData.contactInfo || undefined,
+    })
     onOpenChange(false)
     setFormData({
       firstName: '',
       lastName: '',
       pronouns: '',
       heritageLocation: '',
+      latitude: '',
+      longitude: '',
       userDescription: '',
       contactInfo: '',
     })
@@ -112,6 +127,33 @@ export function ContactForm({ open, onOpenChange }: ContactFormProps) {
                 value={formData.heritageLocation}
                 onChange={(e) => setFormData({ ...formData, heritageLocation: e.target.value })}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="latitude">Latitude *</Label>
+                <Input
+                  id="latitude"
+                  type="number"
+                  step="any"
+                  placeholder="e.g., 35.6762"
+                  required
+                  value={formData.latitude}
+                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="longitude">Longitude *</Label>
+                <Input
+                  id="longitude"
+                  type="number"
+                  step="any"
+                  placeholder="e.g., 139.6503"
+                  required
+                  value={formData.longitude}
+                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

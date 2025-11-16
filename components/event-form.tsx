@@ -13,18 +13,22 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import type { Event } from '@/app/page'
 
 interface EventFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSubmit: (event: Omit<Event, 'id' | 'createdAt'>) => void
 }
 
-export function EventForm({ open, onOpenChange }: EventFormProps) {
+export function EventForm({ open, onOpenChange, onSubmit }: EventFormProps) {
   const [formData, setFormData] = useState({
     eventName: '',
     hostName: '',
     eventDate: '',
     eventLocation: '',
+    latitude: '',
+    longitude: '',
     shortDescription: '',
     eventUrl: '',
   })
@@ -32,13 +36,24 @@ export function EventForm({ open, onOpenChange }: EventFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('[v0] Event form submitted:', formData)
-    // TODO: Save to database and add marker to map
+    onSubmit({
+      eventName: formData.eventName,
+      hostName: formData.hostName,
+      eventDate: formData.eventDate,
+      eventLocation: formData.eventLocation,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+      shortDescription: formData.shortDescription,
+      eventUrl: formData.eventUrl,
+    })
     onOpenChange(false)
     setFormData({
       eventName: '',
       hostName: '',
       eventDate: '',
       eventLocation: '',
+      latitude: '',
+      longitude: '',
       shortDescription: '',
       eventUrl: '',
     })
@@ -100,6 +115,33 @@ export function EventForm({ open, onOpenChange }: EventFormProps) {
               <p className="text-xs text-muted-foreground">
                 This location will be used to place a marker on the map
               </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="latitude">Latitude *</Label>
+                <Input
+                  id="latitude"
+                  type="number"
+                  step="any"
+                  placeholder="e.g., 35.6762"
+                  required
+                  value={formData.latitude}
+                  onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="longitude">Longitude *</Label>
+                <Input
+                  id="longitude"
+                  type="number"
+                  step="any"
+                  placeholder="e.g., 139.6503"
+                  required
+                  value={formData.longitude}
+                  onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

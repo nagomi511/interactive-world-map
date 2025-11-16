@@ -25,6 +25,32 @@ export interface Story {
   createdAt: Date
 }
 
+export interface Event {
+  id: string
+  eventName: string
+  hostName: string
+  eventDate: string
+  eventLocation: string
+  latitude: number
+  longitude: number
+  shortDescription: string
+  eventUrl: string
+  createdAt: Date
+}
+
+export interface Person {
+  id: string
+  firstName: string
+  lastName: string
+  pronouns: string
+  heritageLocation: string
+  latitude: number
+  longitude: number
+  userDescription: string
+  contactInfo?: string
+  createdAt: Date
+}
+
 export default function Home() {
   const [selectedPeople, setSelectedPeople] = useState<string | null>(null)
   const [storyFormOpen, setStoryFormOpen] = useState(false)
@@ -32,6 +58,10 @@ export default function Home() {
   const [contactFormOpen, setContactFormOpen] = useState(false)
   const [stories, setStories] = useState<Story[]>([])
   const [showStoryPins, setShowStoryPins] = useState(false)
+  const [events, setEvents] = useState<Event[]>([])
+  const [showEventPins, setShowEventPins] = useState(false)
+  const [people, setPeople] = useState<Person[]>([])
+  const [showPeoplePins, setShowPeoplePins] = useState(false)
 
   const handleAddStory = (story: Omit<Story, 'id' | 'createdAt'>) => {
     const newStory: Story = {
@@ -41,6 +71,26 @@ export default function Home() {
     }
     setStories([...stories, newStory])
     console.log('[v0] New story added:', newStory)
+  }
+
+  const handleAddEvent = (event: Omit<Event, 'id' | 'createdAt'>) => {
+    const newEvent: Event = {
+      ...event,
+      id: `event-${Date.now()}`,
+      createdAt: new Date(),
+    }
+    setEvents([...events, newEvent])
+    console.log('[v0] New event added:', newEvent)
+  }
+
+  const handleAddPerson = (person: Omit<Person, 'id' | 'createdAt'>) => {
+    const newPerson: Person = {
+      ...person,
+      id: `person-${Date.now()}`,
+      createdAt: new Date(),
+    }
+    setPeople([...people, newPerson])
+    console.log('[v0] New person added:', newPerson)
   }
 
   return (
@@ -90,6 +140,12 @@ export default function Home() {
         stories={stories}
         showStoryPins={showStoryPins}
         onToggleStoryPins={() => setShowStoryPins(!showStoryPins)}
+        events={events}
+        showEventPins={showEventPins}
+        onToggleEventPins={() => setShowEventPins(!showEventPins)}
+        people={people}
+        showPeoplePins={showPeoplePins}
+        onTogglePeoplePins={() => setShowPeoplePins(!showPeoplePins)}
       />
 
       <InfoModal
@@ -103,8 +159,16 @@ export default function Home() {
         onOpenChange={setStoryFormOpen}
         onSubmit={handleAddStory}
       />
-      <EventForm open={eventFormOpen} onOpenChange={setEventFormOpen} />
-      <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />
+      <EventForm 
+        open={eventFormOpen} 
+        onOpenChange={setEventFormOpen}
+        onSubmit={handleAddEvent}
+      />
+      <ContactForm 
+        open={contactFormOpen} 
+        onOpenChange={setContactFormOpen}
+        onSubmit={handleAddPerson}
+      />
     </main>
   )
 }
