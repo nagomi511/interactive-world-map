@@ -1,79 +1,46 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { PlusCircle, Users, BookOpen, Calendar } from 'lucide-react'
+import { Users, BookOpen, Calendar, MapPin } from 'lucide-react'
+import type { Story } from '@/app/page'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 interface WorldMapProps {
   onSelectPeople: (id: string) => void
   onOpenStoryForm: () => void
   onOpenEventForm: () => void
   onOpenContactForm: () => void
+  stories: Story[]
+  showStoryPins: boolean
+  onToggleStoryPins: () => void
 }
 
-const indigenousPeoples = [
-  {
-    id: 'ainu',
-    name: 'Ainu People',
-    region: 'Hokkaido, Japan',
-    position: { x: 82, y: 32 },
-  },
-  {
-    id: 'maori',
-    name: 'Māori People',
-    region: 'New Zealand',
-    position: { x: 92, y: 82 },
-  },
-  {
-    id: 'navajo',
-    name: 'Navajo Nation',
-    region: 'Southwestern United States',
-    position: { x: 18, y: 33 },
-  },
-  {
-    id: 'sami',
-    name: 'Sámi People',
-    region: 'Northern Europe',
-    position: { x: 52, y: 18 },
-  },
-  {
-    id: 'aboriginal',
-    name: 'Aboriginal Australians',
-    region: 'Australia',
-    position: { x: 84, y: 72 },
-  },
-  {
-    id: 'inuit',
-    name: 'Inuit',
-    region: 'Arctic Region',
-    position: { x: 28, y: 12 },
-  },
-  {
-    id: 'maya',
-    name: 'Maya People',
-    region: 'Mexico & Central America',
-    position: { x: 20, y: 42 },
-  },
-  {
-    id: 'masai',
-    name: 'Maasai People',
-    region: 'East Africa',
-    position: { x: 56, y: 58 },
-  },
-  {
-    id: 'karen',
-    name: 'Karen People',
-    region: 'Thailand & Myanmar',
-    position: { x: 74, y: 44 },
-  },
-  {
-    id: 'quechua',
-    name: 'Quechua People',
-    region: 'Andes Mountains',
-    position: { x: 26, y: 62 },
-  },
-]
+function latLngToPosition(lat: number, lng: number) {
+  // Simple Mercator projection approximation
+  const x = ((lng + 180) / 360) * 100
+  const y = ((90 - lat) / 180) * 100
+  return { x, y }
+}
 
-export function WorldMap({ onSelectPeople, onOpenStoryForm, onOpenEventForm, onOpenContactForm }: WorldMapProps) {
+export function WorldMap({ 
+  onSelectPeople, 
+  onOpenStoryForm, 
+  onOpenEventForm, 
+  onOpenContactForm,
+  stories,
+  showStoryPins,
+  onToggleStoryPins
+}: WorldMapProps) {
+  const [selectedStory, setSelectedStory] = useState<Story | null>(null)
+
   return (
     <div className="relative h-screen w-full overflow-hidden">
       {/* Map background - full width */}
@@ -92,13 +59,37 @@ export function WorldMap({ onSelectPeople, onOpenStoryForm, onOpenEventForm, onO
         <div className="h-full w-full bg-[linear-gradient(to_right,theme(colors.border)_1px,transparent_1px),linear-gradient(to_bottom,theme(colors.border)_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
 
-      {/* Indigenous peoples markers */}
+      {showStoryPins && stories.map((story) => {
+        const position = latLngToPosition(story.latitude, story.longitude)
+        return (
+          <button
+            key={story.id}
+            className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2 group"
+            style={{
+              left: `${position.x}%`,
+              top: `${position.y}%`,
+            }}
+            onClick={() => setSelectedStory(story)}
+          >
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
+              <div className="relative w-8 h-8 rounded-full bg-primary/80 backdrop-blur-sm border-2 border-primary flex items-center justify-center hover:bg-primary transition-colors shadow-lg">
+                <MapPin className="w-4 h-4 text-primary-foreground" />
+              </div>
+            </div>
+          </button>
+        )
+      })}
 
       <div className="absolute right-6 top-6 z-20 flex flex-col gap-3">
         <Button
           size="sm"
-          onClick={onOpenStoryForm}
-          className="bg-primary/80 hover:bg-primary backdrop-blur-sm shadow-lg"
+          onClick={onToggleStoryPins}
+          className={`${
+            showStoryPins 
+              ? 'bg-primary hover:bg-primary/90' 
+              : 'bg-primary/80 hover:bg-primary'
+          } backdrop-blur-sm shadow-lg`}
         >
           <BookOpen className="mr-2 h-4 w-4" />
           Show1
@@ -120,6 +111,66 @@ export function WorldMap({ onSelectPeople, onOpenStoryForm, onOpenEventForm, onO
           Show3
         </Button>
       </div>
+
+      <Dialog open={!!selectedStory} onOpenChange={(open) => !open && setSelectedStory(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] p-0 gap-0 overflow-hidden flex flex-col">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b border-border shrink-0">
+            <DialogTitle className="text-2xl font-bold">{selectedStory?.title}</DialogTitle>
+            <DialogDescription>
+              {selectedStory?.shortDescription}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="flex-1 px-6">
+            <div className="py-6 space-y-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4" />
+                <span>{selectedStory?.location}</span>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-semibold">Submitted by</h3>
+                <p className="text-muted-foreground">
+                  {selectedStory?.firstName} {selectedStory?.lastName}
+                </p>
+              </div>
+
+              {selectedStory?.videoUrl && (
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Video</h3>
+                  <a 
+                    href={selectedStory.videoUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                  >
+                    Watch Video
+                  </a>
+                </div>
+              )}
+
+              {selectedStory?.story && (
+                <div className="space-y-2">
+                  <h3 className="font-semibold">Story</h3>
+                  <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                    {selectedStory.story}
+                  </p>
+                </div>
+              )}
+
+              <div className="text-xs text-muted-foreground pt-4">
+                Posted on {selectedStory?.createdAt.toLocaleDateString()}
+              </div>
+            </div>
+          </ScrollArea>
+
+          <div className="px-6 py-4 border-t border-border shrink-0">
+            <Button onClick={() => setSelectedStory(null)} className="w-full">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

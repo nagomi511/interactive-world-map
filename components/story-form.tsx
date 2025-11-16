@@ -17,13 +17,26 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 interface StoryFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSubmit?: (story: {
+    firstName: string
+    lastName: string
+    location: string
+    latitude: number
+    longitude: number
+    title: string
+    shortDescription: string
+    story: string
+    videoUrl?: string
+  }) => void
 }
 
-export function StoryForm({ open, onOpenChange }: StoryFormProps) {
+export function StoryForm({ open, onOpenChange, onSubmit }: StoryFormProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     location: '',
+    latitude: 0,
+    longitude: 0,
     title: '',
     shortDescription: '',
     story: '',
@@ -33,12 +46,19 @@ export function StoryForm({ open, onOpenChange }: StoryFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('[v0] Story form submitted:', formData)
-    // TODO: Save to database (Supabase/Firebase/etc.)
+    if (onSubmit) {
+      onSubmit({
+        ...formData,
+        videoUrl: formData.videoUrl || undefined,
+      })
+    }
     onOpenChange(false)
     setFormData({
       firstName: '',
       lastName: '',
       location: '',
+      latitude: 0,
+      longitude: 0,
       title: '',
       shortDescription: '',
       story: '',
@@ -88,6 +108,33 @@ export function StoryForm({ open, onOpenChange }: StoryFormProps) {
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="latitude">Latitude *</Label>
+                <Input
+                  id="latitude"
+                  type="number"
+                  step="0.0001"
+                  placeholder="e.g., 49.2827"
+                  required
+                  value={formData.latitude}
+                  onChange={(e) => setFormData({ ...formData, latitude: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="longitude">Longitude *</Label>
+                <Input
+                  id="longitude"
+                  type="number"
+                  step="0.0001"
+                  placeholder="e.g., -123.1207"
+                  required
+                  value={formData.longitude}
+                  onChange={(e) => setFormData({ ...formData, longitude: parseFloat(e.target.value) || 0 })}
+                />
+              </div>
             </div>
 
             <div className="space-y-2">

@@ -11,11 +11,37 @@ import { HeroSection } from '@/components/hero-section'
 import { Button } from '@/components/ui/button'
 import { BookOpen, Calendar, Users } from 'lucide-react'
 
+export interface Story {
+  id: string
+  firstName: string
+  lastName: string
+  location: string
+  latitude: number
+  longitude: number
+  title: string
+  shortDescription: string
+  story: string
+  videoUrl?: string
+  createdAt: Date
+}
+
 export default function Home() {
   const [selectedPeople, setSelectedPeople] = useState<string | null>(null)
   const [storyFormOpen, setStoryFormOpen] = useState(false)
   const [eventFormOpen, setEventFormOpen] = useState(false)
   const [contactFormOpen, setContactFormOpen] = useState(false)
+  const [stories, setStories] = useState<Story[]>([])
+  const [showStoryPins, setShowStoryPins] = useState(false)
+
+  const handleAddStory = (story: Omit<Story, 'id' | 'createdAt'>) => {
+    const newStory: Story = {
+      ...story,
+      id: `story-${Date.now()}`,
+      createdAt: new Date(),
+    }
+    setStories([...stories, newStory])
+    console.log('[v0] New story added:', newStory)
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -61,6 +87,9 @@ export default function Home() {
         onOpenStoryForm={() => setStoryFormOpen(true)}
         onOpenEventForm={() => setEventFormOpen(true)}
         onOpenContactForm={() => setContactFormOpen(true)}
+        stories={stories}
+        showStoryPins={showStoryPins}
+        onToggleStoryPins={() => setShowStoryPins(!showStoryPins)}
       />
 
       <InfoModal
@@ -69,7 +98,11 @@ export default function Home() {
         onOpenChange={(open) => !open && setSelectedPeople(null)}
       />
 
-      <StoryForm open={storyFormOpen} onOpenChange={setStoryFormOpen} />
+      <StoryForm 
+        open={storyFormOpen} 
+        onOpenChange={setStoryFormOpen}
+        onSubmit={handleAddStory}
+      />
       <EventForm open={eventFormOpen} onOpenChange={setEventFormOpen} />
       <ContactForm open={contactFormOpen} onOpenChange={setContactFormOpen} />
     </main>
